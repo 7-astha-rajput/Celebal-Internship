@@ -225,6 +225,92 @@ JOIN Person.Address a ON soh.ShipToAddressID = a.AddressID
 WHERE p.Name = 'Tofu';
 
 
+SELECT DISTINCT p.Name
+FROM Sales.SalesOrderDetail sod
+JOIN Sales.SalesOrderHeader soh ON sod.SalesOrderID = soh.SalesOrderID
+JOIN Production.Product p ON sod.ProductID = p.ProductID
+JOIN Person.Address a ON soh.ShipToAddressID = a.AddressID
+JOIN Person.StateProvince sp ON a.StateProvinceID = sp.StateProvinceID
+JOIN Person.CountryRegion cr ON sp.CountryRegionCode = cr.CountryRegionCode
+WHERE cr.Name = 'France';
+
+
+SELECT DISTINCT p.Name
+FROM Sales.SalesOrderDetail sod
+JOIN Sales.SalesOrderHeader soh ON sod.SalesOrderID = soh.SalesOrderID
+JOIN Production.Product p ON sod.ProductID = p.ProductID
+JOIN Person.Address a ON soh.ShipToAddressID = a.AddressID
+JOIN Person.StateProvince sp ON a.StateProvinceID = sp.StateProvinceID
+JOIN Person.CountryRegion cr ON sp.CountryRegionCode = cr.CountryRegionCode
+WHERE cr.Name = 'France';
+
+
+
+SELECT p.Name AS ProductName, pc.Name AS CategoryName
+FROM Production.Product p
+JOIN Production.ProductCategory pc ON p.ProductCategoryID = pc.ProductCategoryID
+JOIN Production.ProductVendor pv ON p.ProductID = pv.ProductID
+JOIN Purchasing.Vendor v ON pv.BusinessEntityID = v.BusinessEntityID
+WHERE v.Name = 'Specialty Biscuits, Ltd.';
+
+
+
+SELECT p.*
+FROM Production.Product p
+LEFT JOIN Sales.SalesOrderDetail sod ON p.ProductID = sod.ProductID
+WHERE sod.ProductID IS NULL;
+
+SELECT p.*
+FROM Production.Product p
+WHERE p.UnitsInStock < 10 AND p.UnitsOnOrder = 0;
+
+
+SELECT TOP 10 cr.Name AS Country, SUM(soh.TotalDue) AS TotalSales
+FROM Sales.SalesOrderHeader soh
+JOIN Person.Address a ON soh.ShipToAddressID = a.AddressID
+JOIN Person.StateProvince sp ON a.StateProvinceID = sp.StateProvinceID
+JOIN Person.CountryRegion cr ON sp.CountryRegionCode = cr.CountryRegionCode
+GROUP BY cr.Name
+ORDER BY TotalSales DESC;
+
+
+SELECT e.BusinessEntityID, COUNT(soh.SalesOrderID) AS OrderCount
+FROM Sales.SalesOrderHeader soh
+JOIN HumanResources.Employee e ON soh.SalesPersonID = e.BusinessEntityID
+JOIN Sales.Customer c ON soh.CustomerID = c.CustomerID
+WHERE c.AccountNumber BETWEEN 'A' AND 'AO'
+GROUP BY e.BusinessEntityID;
+
+
+SELECT TOP 1 soh.OrderDate
+FROM Sales.SalesOrderHeader soh
+ORDER BY soh.TotalDue DESC;
+
+
+
+SELECT p.Name, SUM(sod.OrderQty * sod.UnitPrice) AS TotalRevenue
+FROM Sales.SalesOrderDetail sod
+JOIN Production.Product p ON sod.ProductID = p.ProductID
+GROUP BY p.Name
+ORDER BY TotalRevenue DESC;
+
+
+SELECT pv.BusinessEntityID AS SupplierID, COUNT(pv.ProductID) AS ProductCount
+FROM Production.ProductVendor pv
+GROUP BY pv.BusinessEntityID;
+
+
+
+SELECT TOP 10 c.CustomerID, SUM(soh.TotalDue) AS TotalSpent
+FROM Sales.SalesOrderHeader soh
+JOIN Sales.Customer c ON soh.CustomerID = c.CustomerID
+GROUP BY c
+
+
+SELECT SUM(TotalDue) AS TotalRevenue
+FROM Sales.SalesOrderHeader;
+
+
 
 
 
